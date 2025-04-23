@@ -47,6 +47,7 @@ import TestFilter from "@/components/TestFilter";
 import TestBarChart from "@/components/TestBarchart";
 import TestFilter2 from "@/components/TestFilter2";
 import TestFilter3 from "@/components/TestFilter3";
+import HSCodeFilter from "@/components/HSCodeFilter";
 
 // Dynamically import BarChart and disable SSR
 const BarChart = dynamic(() => import("../../components/Barchart"), {
@@ -827,7 +828,7 @@ export default function Dashboard() {
                   searchType={values.searchType}
                   info={values.info}
                 /> */}
-                <TestFilter3
+                <HSCodeFilter
                   allData={allData}
                   leftFilterData={leftFilterData}
                   graphFilterHandler={graphFilterHandler}
