@@ -1,11 +1,10 @@
-"use client";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+"use client"
+import { useCallback, useEffect, useRef, useState } from "react"
 
-import { CiSearch } from "react-icons/ci";
-import { RxSize } from "react-icons/rx";
-import { IoBarChart } from "react-icons/io5";
-import { FaChevronDown } from "react-icons/fa";
-import { themeChange } from "theme-change";
+import { CiSearch } from "react-icons/ci"
+import { RxSize } from "react-icons/rx"
+import { IoBarChart } from "react-icons/io5"
+import { FaChevronDown } from "react-icons/fa"
 import {
   Autocomplete,
   Backdrop,
@@ -17,42 +16,36 @@ import {
   Select,
   Stack,
   TextField,
-} from "@mui/material";
-import { useFormik } from "formik";
-import ToggleButton from "@mui/material/ToggleButton";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+} from "@mui/material"
+import { useFormik } from "formik"
+import ToggleButton from "@mui/material/ToggleButton"
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup"
 // import debounce from "lodash.debounce";
-import debounce from "lodash/debounce";
-import { toast } from "react-toastify";
-import Datepicker from "react-tailwindcss-datepicker";
-import { format } from "date-fns";
-import axiosInstance from "@/utils/axiosInstance";
-import { validationSchema } from "@/utils/validationSchemas";
-import Checkbox from "@mui/material/Checkbox";
+import debounce from "lodash/debounce"
+import { toast } from "react-toastify"
+import axiosInstance from "@/utils/axiosInstance"
+import Checkbox from "@mui/material/Checkbox"
 // import Autocomplete from "@mui/material/Autocomplete";
 // import TextField from "@mui/material/TextField";
-import { CheckBoxOutlineBlank, CheckBox } from "@mui/icons-material";
+import { CheckBoxOutlineBlank, CheckBox } from "@mui/icons-material"
 // import BarChart from "@/components/Barchart";
-import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic"
+import { useRouter } from "next/navigation"
 
-const icon = <CheckBoxOutlineBlank fontSize="small" />;
-const checkedIcon = <CheckBox fontSize="small" />;
+const icon = <CheckBoxOutlineBlank fontSize="small" />
+const checkedIcon = <CheckBox fontSize="small" />
 
 // COMPONENTS======
-import DataCard from "@/components/DataCard";
-import Accordion from "@/components/Accordion";
-import RecordTable from "@/components/RecordTable";
-import TestFilter from "@/components/TestFilter";
-import TestBarChart from "@/components/TestBarchart";
-import TestFilter2 from "@/components/TestFilter2";
-import TestFilter3 from "@/components/TestFilter3";
-import HSCodeFilter from "@/components/HSCodeFilter";
+import DataCard from "@/components/DataCard"
+import Accordion from "@/components/Accordion"
+import RecordTable from "@/components/RecordTable"
+import TestBarChart from "@/components/TestBarchart"
+import HSCodeFilter from "@/components/HSCodeFilter"
 
 // Dynamically import BarChart and disable SSR
 const BarChart = dynamic(() => import("../../components/Barchart"), {
   ssr: false,
-});
+})
 
 const chapters = [
   { title: "28" },
@@ -62,30 +55,32 @@ const chapters = [
   { title: "32" },
   { title: "33" },
   { title: "34" },
-];
+]
+
+const cleanChapters = [{ title: "29" }, { title: "30" }]
 
 export default function Dashboard() {
-  const router = useRouter();
-  const [allData, setAllData] = useState([]);
-  const [showAllGraphs, setShowAllGraphs] = useState(false);
-  const [outputDataType, setOutputDataType] = useState('graph');
+  const router = useRouter()
+  const [allData, setAllData] = useState([])
+  const [showAllGraphs, setShowAllGraphs] = useState(false)
+  const [outputDataType, setOutputDataType] = useState("graph")
 
-  const [dateDuration, setDateDuration] = useState("");
-  const [selectedSearchValues, setSelectedSearchValues] = useState([]);
-  const [recordData, setRecordData] = useState([]);
-  const [recordLoading, setRecordLoading] = useState(false);
-  const [recordError, setRecordError] = useState("");
-  const [error, setError] = useState(null);
-  const [searchApiData, setSearchApiData] = useState([]);
-  const [searchLoading, setSearchLoading] = useState(false);
+  const [dateDuration, setDateDuration] = useState("")
+  const [selectedSearchValues, setSelectedSearchValues] = useState([])
+  const [recordData, setRecordData] = useState([])
+  const [recordLoading, setRecordLoading] = useState(false)
+  const [recordError, setRecordError] = useState("")
+  const [error, setError] = useState(null)
+  const [searchApiData, setSearchApiData] = useState([])
+  const [searchLoading, setSearchLoading] = useState(false)
 
-  const [graphsData, setGraphsData] = useState([]);
-  const [leftFilterData, setLeftFilterData] = useState([]);
+  const [graphsData, setGraphsData] = useState([])
+  const [leftFilterData, setLeftFilterData] = useState([])
 
-  const [totalData, setTotalData] = useState(null);
+  const [totalData, setTotalData] = useState(null)
 
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const datePickerRef = useRef(null);
+  const [showDatePicker, setShowDatePicker] = useState(false)
+  const datePickerRef = useRef(null)
 
   const {
     handleSubmit,
@@ -108,10 +103,10 @@ export default function Dashboard() {
       searchValue: "",
     },
     onSubmit: async (values) => {
-      const sessionId = localStorage.getItem("sessionId");
+      const sessionId = localStorage.getItem("sessionId")
       try {
-        setRecordLoading(true);
-        setRecordError(null);
+        setRecordLoading(true)
+        setRecordError(null)
         const response = await axiosInstance.get(`/data/records`, {
           params: {
             informationOf: values.info,
@@ -122,10 +117,10 @@ export default function Dashboard() {
             searchValue: values.searchValue,
             session: sessionId,
           },
-        });
-        setRecordData(response.data.data);
+        })
+        setRecordData(response.data.data)
 
-        const { data, metrics } = response?.data?.data || {};
+        const { data, metrics } = response?.data?.data || {}
 
         if (data) {
           setAllData(data)
@@ -133,146 +128,145 @@ export default function Dashboard() {
         }
 
         if (metrics) {
-          const dynamicGraphsData = Object.entries(metrics).map(
-            ([key, value]) => {
-              const data = value.map((item) => ({
-                label:
-                  item.buyer ||
-                  item.supplier ||
-                  item.buyerCountry ||
-                  item.portOfOrigin ||
-                  "Unknown",
-                value: item.total,
-              }));
-              return {
-                key,
-                data,
-                label: key.replace(/([A-Z])/g, " $1").trim(),
-              };
+          const dynamicGraphsData = Object.entries(metrics).map(([key, value]) => {
+            const data = value.map((item) => ({
+              label: item.buyer || item.supplier || item.buyerCountry || item.portOfOrigin || "Unknown",
+              value: item.total,
+            }))
+            return {
+              key,
+              data,
+              label: key.replace(/([A-Z])/g, " $1").trim(),
             }
-          );
+          })
 
-          setGraphsData(dynamicGraphsData);
+          setGraphsData(dynamicGraphsData)
         } else {
-          console.error("Metrics data is missing in API response.");
+          console.error("Metrics data is missing in API response.")
         }
       } catch (err) {
-        const errorMessage = err.response?.data?.message || "An error occurred";
-        setRecordError(errorMessage);
+        const errorMessage = err.response?.data?.message || "An error occurred"
+        setRecordError(errorMessage)
 
         if (err.response.status === 403) {
-          router.push("/login");
+          router.push("/login")
         }
       } finally {
-        setRecordLoading(false);
+        setRecordLoading(false)
       }
     },
-  });
+  })
 
-  const valuesRef = useRef(values);
+  const valuesRef = useRef(values)
 
   useEffect(() => {
-    valuesRef.current = values;
-  }, [values]);
+    valuesRef.current = values
+  }, [values])
 
-  const fetchSuggestions = async (
-    query,
-    currentValues,
-    setSearchApiData,
-    setError
-  ) => {
-    const sessionId = localStorage.getItem("sessionId");
-    const url = `/data/suggestion?informationOf=${currentValues.info}&chapter=${currentValues.chapter ? currentValues.chapter : ""
-      }&searchType=${currentValues.searchType}&suggestion=${encodeURIComponent(
-        query
-      )}&session=${sessionId}`;
+  const fetchSuggestions = async (query, currentValues, setSearchApiData, setError) => {
+    const sessionId = localStorage.getItem("sessionId")
+    const url = `/data/suggestion?informationOf=${currentValues.info}&chapter=${
+      currentValues.chapter ? currentValues.chapter : ""
+    }&searchType=${currentValues.searchType}&suggestion=${encodeURIComponent(query)}&session=${sessionId}`
     try {
-      const response = await axiosInstance.get(url);
+      const response = await axiosInstance.get(url)
 
-      setSearchApiData([{ title: query }, ...response.data.data]);
+      setSearchApiData([{ title: query }, ...response.data.data])
     } catch (err) {
-      toast.error("api failed in catch❌❌❌");
-      console.error("error====", err);
-      setError(err.message);
+      toast.error("api failed in catch❌❌❌")
+      console.error("error====", err)
+      setError(err.message)
     }
-  };
+  }
 
   // Debounced API fetch function
   const handleSearch = useCallback(
     debounce(async (query) => {
       if (query) {
-        setSearchLoading(true);
-        await fetchSuggestions(
-          query,
-          valuesRef.current,
-          setSearchApiData,
-          setError
-        );
-        setSearchLoading(false);
+        setSearchLoading(true)
+        await fetchSuggestions(query, valuesRef.current, setSearchApiData, setError)
+        setSearchLoading(false)
       }
     }, 300), // Debounce interval in ms
-    []
-  );
+    [],
+  )
 
-
-
+  // Add an effect to update chapter selection when data type changes
   useEffect(() => {
-    (async () => {
-      try {
-        const sessionId = localStorage.getItem("sessionId");
-        const response = await axiosInstance.get(`/data/records`, {
-          params: {
-            informationOf: "export",
-            dataType: "cleaned data",
-            duration: "01/02/2022-01/02/2025",
-            chapter: "30",
-            searchType: "product name",
-            searchValue: "Acetic Acid",
-            session: sessionId,
-          },
-        });
-        setRecordData(response.data.data);
-
-        const { data, metrics } = response?.data?.data || {};
-        if (data) {
-          setAllData(data)
-          setLeftFilterData(data)
+    if (values.dataType === "cleaned data") {
+      // If current chapter selection includes chapters other than 29 and 30, filter them out
+      if (values.chapter && values.chapter.length > 0) {
+        const validChapters = values.chapter.filter((chapter) => ["29", "30"].includes(chapter))
+        if (JSON.stringify(validChapters) !== JSON.stringify(values.chapter)) {
+          setFieldValue("chapter", validChapters)
         }
-        if (metrics) {
-          const dynamicGraphsData = Object.entries(metrics).map(
-            ([key, value]) => {
-              const data = value.map((item) => ({
-                label:
-                  item.buyer ||
-                  item.supplier ||
-                  item.buyerCountry ||
-                  item.portOfOrigin ||
-                  "Unknown",
-                value: item.total,
-              }));
-              return {
-                key,
-                data,
-                label: key.replace(/([A-Z])/g, " $1").trim(),
-              };
-            }
-          );
-
-          setGraphsData(dynamicGraphsData);
-        } else {
-          console.error("Metrics data is missing in API response.");
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
       }
-    })();
-  }, []);
+    }
+  }, [values.dataType, setFieldValue, values.chapter])
 
+  // useEffect(() => {
+  //   if (values.dataType === "cleaned data") {
+  //     // If switching to cleaned data, filter out rawCthat aren't 29 or 30
+  //     const validChapters = chapters.filter((chapter) => ["29", "30"].includes(chapter.title))
+  //     if (validChapters.length === 0) {
+  //       // If no valid chapters remain, default to both 29 and 30
+  //       setFieldValue("chapter", ["29", "30"])
+  //     } else {
+  //       // Otherwise keep only the vali d ones
+  //       setFieldValue("chapter", validChapters)
+  //     }
+  //   }
+  // }, [values.dataType, setFieldValue, values.chapter])
+
+  // useEffect(() => {
+  //   (async () => {
+  //     try {
+  //       const sessionId = localStorage.getItem("sessionId")
+  //       const response = await axiosInstance.get(`/data/records`, {
+  //         params: {
+  //           informationOf: "export",
+  //           dataType: "cleaned data",
+  //           duration: "01/02/2022-01/02/2025",
+  //           chapter: "30",
+  //           searchType: "product name",
+  //           searchValue: "Acetic Acid",
+  //           session: sessionId,
+  //         },
+  //       })
+  //       setRecordData(response.data.data)
+
+  //       const { data, metrics } = response?.data?.data || {}
+  //       if (data) {
+  //         setAllData(data)
+  //         setLeftFilterData(data)
+  //       }
+  //       if (metrics) {
+  //         const dynamicGraphsData = Object.entries(metrics).map(([key, value]) => {
+  //           const data = value.map((item) => ({
+  //             label: item.buyer || item.supplier || item.buyerCountry || item.portOfOrigin || "Unknown",
+  //             value: item.total,
+  //           }))
+  //           return {
+  //             key,
+  //             data,
+  //             label: key.replace(/([A-Z])/g, " $1").trim(),
+  //           }
+  //         })
+
+  //         setGraphsData(dynamicGraphsData)
+  //       } else {
+  //         console.error("Metrics data is missing in API response.")
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error)
+  //     }
+  //   })()
+  // }, [])
 
   const graphFilterHandler = (filteredData) => {
-    setGraphsData(filteredData.data);
-    setTotalData(filteredData);
-  };
+    setGraphsData(filteredData.data)
+    setTotalData(filteredData)
+  }
 
   const searchOptions = [
     { title: "Product Description", value: "productDescription" },
@@ -287,7 +281,7 @@ export default function Dashboard() {
       title: values.info === "export" ? "Indian Company (Exporter)" : "Foreign Company (Exporter)",
       value: values.info === "export" ? "buyer" : "supplier",
     },
-  ];
+  ]
 
   // const formatDate = (date) => {
   //   if (!date) return "";
@@ -296,98 +290,65 @@ export default function Dashboard() {
   // };
 
   const formatDate = (date) => {
-    if (!date) return "";
+    if (!date) return ""
 
-    const [year, month, day] = date.split("-");
-    const monthNames = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
+    const [year, month, day] = date.split("-")
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
-    return `${parseInt(day, 10)}-${monthNames[parseInt(month, 10) - 1]
-      }-${year}`;
-  };
+    return `${Number.parseInt(day, 10)}-${monthNames[Number.parseInt(month, 10) - 1]}-${year}`
+  }
 
   useEffect(() => {
     if (!values.startDate && !values.endDate) {
-      const today = new Date();
-      const lastThreeYears = new Date();
-      lastThreeYears.setFullYear(today.getFullYear() - 3); // Get last 3 years' date
+      const today = new Date()
+      const lastThreeYears = new Date()
+      lastThreeYears.setFullYear(today.getFullYear() - 3) // Get last 3 years' date
 
-      const formattedStartDate = lastThreeYears
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .join("/");
-      const formattedEndDate = today
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .join("/");
+      const formattedStartDate = lastThreeYears.toLocaleDateString("en-GB").split("/").join("/")
+      const formattedEndDate = today.toLocaleDateString("en-GB").split("/").join("/")
 
-      setFieldValue("startDate", lastThreeYears.toISOString().split("T")[0]);
-      setFieldValue("endDate", today.toISOString().split("T")[0]);
-      setFieldValue("duration", `${formattedStartDate}-${formattedEndDate}`);
+      setFieldValue("startDate", lastThreeYears.toISOString().split("T")[0])
+      setFieldValue("endDate", today.toISOString().split("T")[0])
+      setFieldValue("duration", `${formattedStartDate}-${formattedEndDate}`)
     }
-  }, [setFieldValue, values.startDate, values.endDate]);
+  }, [setFieldValue, values.startDate, values.endDate])
 
   useEffect(() => {
     if (values.startDate && values.endDate) {
-      const formattedStartDate = new Date(values.startDate)
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .join("/");
-      const formattedEndDate = new Date(values.endDate)
-        .toLocaleDateString("en-GB")
-        .split("/")
-        .join("/");
+      const formattedStartDate = new Date(values.startDate).toLocaleDateString("en-GB").split("/").join("/")
+      const formattedEndDate = new Date(values.endDate).toLocaleDateString("en-GB").split("/").join("/")
 
-      setFieldValue("duration", `${formattedStartDate}-${formattedEndDate}`);
+      // Only update if the duration would actually change
+      const newDuration = `${formattedStartDate}-${formattedEndDate}`
+      if (values.duration !== newDuration) {
+        setFieldValue("duration", newDuration)
+      }
     }
-  }, [values.startDate, values.endDate, setFieldValue]);
+  }, [values.startDate, values.endDate, setFieldValue, values.duration])
 
   // Close date picker when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        datePickerRef.current &&
-        !datePickerRef.current.contains(event.target)
-      ) {
-        setShowDatePicker(false);
+      if (datePickerRef.current && !datePickerRef.current.contains(event.target)) {
+        setShowDatePicker(false)
       }
-    };
+    }
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside)
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-
-  
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
 
   return (
     <div className="px-1 py-2 bg-gray-100">
-      <form
-        className="flex w-full flex-col justify-between items-center gap-6"
-        onSubmit={handleSubmit}
-      >
+      <form className="flex w-full flex-col justify-between items-center gap-6" onSubmit={handleSubmit}>
         <div className="flex w-full justify-between gap-2">
           <div>
             <ToggleButtonGroup
               value={values.info}
               exclusive
-              onChange={(event, newAlignment) =>
-                setFieldValue("info", newAlignment)
-              }
+              onChange={(event, newAlignment) => setFieldValue("info", newAlignment)}
               aria-label="text alignment"
               size="small"
             >
@@ -454,18 +415,13 @@ export default function Dashboard() {
             />
           </div> */}
 
-          <div
-            className="w-[500px] bg-white relative rounded border border-gray-300"
-            ref={datePickerRef}
-          >
+          <div className="w-[500px] bg-white relative rounded border border-gray-300" ref={datePickerRef}>
             <div
               className="text-gray-700 font-medium p-2 cursor-pointer"
               onClick={() => setShowDatePicker(!showDatePicker)}
             >
               {values.startDate && values.endDate
-                ? `${formatDate(values.startDate)} - ${formatDate(
-                  values.endDate
-                )}`
+                ? `${formatDate(values.startDate)} - ${formatDate(values.endDate)}`
                 : "Select Date Range"}
             </div>
 
@@ -496,11 +452,7 @@ export default function Dashboard() {
 
           {/* DATA TYPE======= */}
           <div className="w-[250px]">
-            <FormControl
-              className="w-full"
-              size="small"
-              sx={{ backgroundColor: "white" }}
-            >
+            <FormControl className="w-full" size="small" sx={{ backgroundColor: "white" }}>
               <InputLabel id="data-type-label">Data Type</InputLabel>
               <Select
                 label="Data Type"
@@ -542,51 +494,44 @@ export default function Dashboard() {
             />
           </div> */}
           <div className="w-[350px]">
-  <Autocomplete
-    multiple
-    disableCloseOnSelect
-    size="small"
-    id="chapter-select"
-    options={chapters}
-    getOptionLabel={(option) => option.title}
-    value={chapters.filter((option) =>
-      values.chapter.includes(option.title)
-    )}
-    onChange={(event, newValue) => {
-      const selected = newValue.map((item) => item.title);
-      setFieldValue("chapter", selected);
-    }}
-    renderOption={(props, option, { selected }) => (
-      <li {...props}>
-        <Checkbox
-          icon={icon}
-          checkedIcon={checkedIcon}
-          style={{ marginRight: 8 }}
-          checked={selected}
-        />
-        {option.title}
-      </li>
-    )}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="Chapter"
-        error={touched.chapter && !!errors.chapter}
-        helperText={touched.chapter && errors.chapter}
-      />
-    )}
-    style={{ width: "100%", backgroundColor: "white" }}
-  />
-</div>
-          <div className="w-full">
-            <FormControl
-              className="w-full"
+            <Autocomplete
+              multiple
+              disableCloseOnSelect
               size="small"
-              sx={{ backgroundColor: "white", borderColor: "gray" }}
-            >
+              id="chapter-select"
+              options={
+                values.dataType === "cleaned data"
+                  ? chapters.filter((chapter) => ["29", "30"].includes(chapter.title))
+                  : chapters
+              }
+              getOptionLabel={(option) => option.title}
+              value={chapters.filter((option) => values.chapter.includes(option.title))}
+              onChange={(event, newValue) => {
+                const selected = newValue.map((item) => item.title)
+                setFieldValue("chapter", selected)
+              }}
+              renderOption={(props, option, { selected }) => (
+                <li {...props}>
+                  <Checkbox icon={icon} checkedIcon={checkedIcon} style={{ marginRight: 8 }} checked={selected} />
+                  {option.title}
+                </li>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Chapter"
+                  error={touched.chapter && !!errors.chapter}
+                  helperText={touched.chapter && errors.chapter}
+                />
+              )}
+              style={{ width: "100%", backgroundColor: "white" }}
+            />
+          </div>
+          <div className="w-full">
+            <FormControl className="w-full" size="small" sx={{ backgroundColor: "white", borderColor: "gray" }}>
               <InputLabel
                 id="search-type-label"
-              // sx={{ color: "black", backgroundColor: "white", paddingX: 1 }}
+                // sx={{ color: "black", backgroundColor: "white", paddingX: 1 }}
               >
                 Search Type
               </InputLabel>
@@ -601,12 +546,12 @@ export default function Dashboard() {
                 error={touched.searchType && Boolean(errors.searchType)}
               >
                 {searchOptions.map((item, i) => (
-
                   <MenuItem
                     disabled={
-                      (values.dataType === "" ? true :
-                        (values.dataType === "raw data" && ["Product Name", "CAS Number"].includes(item.title)) ||
-                        (values.dataType !== "raw data" && item.title === "Product Description"))
+                      values.dataType === ""
+                        ? true
+                        : (values.dataType === "raw data" && ["Product Name", "CAS Number"].includes(item.title)) ||
+                          (values.dataType !== "raw data" && item.title === "Product Description")
                     }
                     value={item.value}
                     key={i}
@@ -615,34 +560,30 @@ export default function Dashboard() {
                   </MenuItem>
                 ))}
               </Select>
-
-              
             </FormControl>
-
-            
           </div>
           <div>
-          <Button
-                type="button"
-                variant="outlined"
-                onClick={() => {
-                  resetForm();
-                  setSearchApiData([]);
-                  setFieldValue("searchValue", "");
-                  setSelectedSearchValues([]);
-                  setShowDatePicker(false);
-                }}
-                sx={{
-                  borderColor: "#1E3A8A",
-                  color: "#1E3A8A",
-                  "&:hover": {
-                    borderColor: "#162F63",
-                    backgroundColor: "transparent",
-                  },
-                }}
-              >
-                Reset
-              </Button>
+            <Button
+              type="button"
+              variant="outlined"
+              onClick={() => {
+                resetForm()
+                setSearchApiData([])
+                setFieldValue("searchValue", "")
+                setSelectedSearchValues([])
+                setShowDatePicker(false)
+              }}
+              sx={{
+                borderColor: "#1E3A8A",
+                color: "#1E3A8A",
+                "&:hover": {
+                  borderColor: "#162F63",
+                  backgroundColor: "transparent",
+                },
+              }}
+            >
+              Reset
+            </Button>
           </div>
         </div>
 
@@ -667,19 +608,17 @@ export default function Dashboard() {
                 onInputChange={(event, value, reason) => {
                   if (reason === "input") {
                     if (value.length >= 3) {
-                      handleSearch(value);
+                      handleSearch(value)
                     }
                   }
                 }}
                 onChange={(event, value) => {
-                  setSelectedSearchValues(value);
-                  const selectedTitles = value
-                    .map((item) => item.title)
-                    .join(", ");
-                  setFieldValue("searchValue", selectedTitles);
+                  setSelectedSearchValues(value)
+                  const selectedTitles = value.map((item) => item.title).join(", ")
+                  setFieldValue("searchValue", selectedTitles)
                 }}
                 onBlur={() => {
-                  setSearchApiData([]); // Clear options if nothing is selected
+                  setSearchApiData([]) // Clear options if nothing is selected
                 }}
                 renderInput={(params) => (
                   <TextField
@@ -690,9 +629,7 @@ export default function Dashboard() {
                       ...params.InputProps,
                       endAdornment: (
                         <>
-                          {searchLoading ? (
-                            <CircularProgress color="inherit" size={20} />
-                          ) : null}
+                          {searchLoading ? <CircularProgress color="inherit" size={20} /> : null}
                           {params.InputProps.endAdornment}
                         </>
                       ),
@@ -719,7 +656,6 @@ export default function Dashboard() {
               >
                 Search
               </Button>
-
             </Stack>
           </div>
 
@@ -743,10 +679,12 @@ export default function Dashboard() {
               value={outputDataType}
               exclusive
               onChange={(event, newAlignment) => {
-                setOutputDataType(newAlignment)
-                setShowAllGraphs(!showAllGraphs)
-              }
-              }
+                if (newAlignment !== null) {
+                  // Prevent null value which can cause issues
+                  setOutputDataType(newAlignment)
+                  setShowAllGraphs(newAlignment === "data") // Set directly based on value
+                }
+              }}
               aria-label="text alignment"
               size="small"
             >
@@ -788,19 +726,14 @@ export default function Dashboard() {
       <dialog id="my_modal_3" className="modal">
         <div className="modal-box">
           <form method="dialog">
-            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-              ✕
-            </button>
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
           </form>
           <p className="py-4"></p>
         </div>
       </dialog>
       {recordLoading ? (
         <div>
-          <Backdrop
-            sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
-            open={true}
-          >
+          <Backdrop sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })} open={true}>
             <CircularProgress color="inherit" />
           </Backdrop>
         </div>
@@ -808,133 +741,107 @@ export default function Dashboard() {
         <div className="text-red-500 text-center">{recordError}</div>
       ) : (
         <div className="space-y-6">
-            <div className="sticky top-2 left-0 w-full z-20">
-              {totalData && <DataCard totalData={totalData} />}
+          <div className="sticky top-2 left-0 w-full z-20">{totalData && <DataCard totalData={totalData} />}</div>
+          <div
+            // className="grid gap-5"
+            // style={{ gridTemplateColumns: "1fr 6fr" }}
+            className="flex gap-5"
+          >
+            <div className="sticky top-24 left-0 w-40 z-10 h-fit">
+              {/* <Filter leftFilterData={leftFilterData} /> */}
+              {/* <TestFilter
+                  leftFilterData={leftFilterData}
+                  graphFilterHandler={graphFilterHandler}
+                  recordData={recordData}
+                  setLeftFilterData={setLeftFilterData}
+                  setLeftFilterData2={setLeftFilterData2}
+                  dataType={values.dataType}
+                  searchType={values.searchType}
+                  info={values.info}
+                /> */}
+              <HSCodeFilter
+                allData={allData}
+                leftFilterData={leftFilterData}
+                graphFilterHandler={graphFilterHandler}
+                recordData={recordData}
+                setLeftFilterData={setLeftFilterData}
+                dataType={values.dataType}
+                searchType={values.searchType}
+                info={values.info}
+              />
+
+              {/* <TestFilter2
+                  leftFilterData={leftFilterData}
+                  graphFilterHandler={graphFilterHandler}
+                  recordData={recordData}
+                  setLeftFilterData={setLeftFilterData}
+                  setLeftFilterData2={setLeftFilterData2}
+                  dataType={values.dataType}
+                  searchType={values.searchType}
+                  info={values.info}
+                /> */}
             </div>
-            <div
-              // className="grid gap-5"
-              // style={{ gridTemplateColumns: "1fr 6fr" }}
-              className="flex gap-5"
-            >
-              <div className="sticky top-24 left-0 w-40 z-10 h-fit">
-                {/* <Filter leftFilterData={leftFilterData} /> */}
-                {/* <TestFilter
-                  leftFilterData={leftFilterData}
-                  graphFilterHandler={graphFilterHandler}
-                  recordData={recordData}
-                  setLeftFilterData={setLeftFilterData}
-                  setLeftFilterData2={setLeftFilterData2}
-                  dataType={values.dataType}
-                  searchType={values.searchType}
-                  info={values.info}
-                /> */}
-                <HSCodeFilter
-                  allData={allData}
-                  leftFilterData={leftFilterData}
-                  graphFilterHandler={graphFilterHandler}
-                  recordData={recordData}
-                  setLeftFilterData={setLeftFilterData}
-                  dataType={values.dataType}
-                  searchType={values.searchType}
-                  info={values.info}
-                />
-
-                {/* <TestFilter2
-                  leftFilterData={leftFilterData}
-                  graphFilterHandler={graphFilterHandler}
-                  recordData={recordData}
-                  setLeftFilterData={setLeftFilterData}
-                  setLeftFilterData2={setLeftFilterData2}
-                  dataType={values.dataType}
-                  searchType={values.searchType}
-                  info={values.info}
-                /> */}
-              </div>
-              {
-                leftFilterData?.length > 0 && <div className="w-[88%] flex flex-col gap-5">
-                  {showAllGraphs ? (
-                    <div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                        {Array.from({ length: 8 }).map((_, index) => (
-                          <div
-                            key={index}
-                            className="card bg-base-100  shadow-xl rounded-lg"
-                          >
-                            <div className="card-body p-2">
-                              <div className="flex justify-between">
-                                <h6 className="card-title text-xs">
-                                  Year/Month (5/50)
-                                </h6>
-                                <div className="flex gap-2">
-                                  <h6 className="card-title text-xs">1Y 3Y</h6>
-                                  <button
-                                    onClick={() =>
-                                      document
-                                        .getElementById("my_modal_3")
-                                        .showModal()
-                                    }
-                                  >
-                                    <IoBarChart />
-                                  </button>
-                                  <RxSize />
-                                </div>
-                              </div>
-
-                              <div>
-                                <label className="input input-sm input-bordered flex items-center gap-2">
-                                  <input
-                                    type="text"
-                                    className="grow"
-                                    placeholder="Search"
-                                  />
-                                  <FaChevronDown />
-                                </label>
-                                <Accordion />
+            {leftFilterData?.length > 0 && (
+              <div className="w-[88%] flex flex-col gap-5">
+                {showAllGraphs ? (
+                  <div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                      {Array.from({ length: 8 }).map((_, index) => (
+                        <div key={index} className="card bg-base-100  shadow-xl rounded-lg">
+                          <div className="card-body p-2">
+                            <div className="flex justify-between">
+                              <h6 className="card-title text-xs">Year/Month (5/50)</h6>
+                              <div className="flex gap-2">
+                                <h6 className="card-title text-xs">1Y 3Y</h6>
+                                <button onClick={() => document.getElementById("my_modal_3").showModal()}>
+                                  <IoBarChart />
+                                </button>
+                                <RxSize />
                               </div>
                             </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2">
-                      {graphsData.length > 0 ? (
-                        graphsData.map((graph, index) => (
-                          <div
-                            key={index}
-                            className="card bg-base-100 w-full border-2"
-                          >
-                            <div className="p-3">
-                              {graph.data && graph.data.length > 0 ? (
-                                <>
-                                  <TestBarChart
-                                    data={graph.data}
-                                    label={graph.label}
-                                  />
-                                  {/* <BarChart data={graph.data} label={graph.label} /> */}
-                                </>
-                              ) : (
-                                <p>No data available for the chart</p>
-                              )}
+
+                            <div>
+                              <label className="input input-sm input-bordered flex items-center gap-2">
+                                <input type="text" className="grow" placeholder="Search" />
+                                <FaChevronDown />
+                              </label>
+                              <Accordion />
                             </div>
                           </div>
-                        ))
-                      ) : (
-                        <div>something went wrong</div>
-                      )}
+                        </div>
+                      ))}
                     </div>
-                  )}
-                  <div className="w-full">
-                    {leftFilterData && <RecordTable data={leftFilterData} />}
                   </div>
-                </div>
-              }
-
-            </div>
-            {/* <BarChartWithTrendLine /> */}
-            {/* <div>{recordData && <Table data={recordData?.data} />}</div> */}
+                ) : (
+                  <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2">
+                    {graphsData.length > 0 ? (
+                      graphsData.map((graph, index) => (
+                        <div key={index} className="card bg-base-100 w-full border-2">
+                          <div className="p-3">
+                            {graph.data && graph.data.length > 0 ? (
+                              <>
+                                <TestBarChart data={graph.data} label={graph.label} />
+                                {/* <BarChart data={graph.data} label={graph.label} /> */}
+                              </>
+                            ) : (
+                              <p>No data available for the chart</p>
+                            )}
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div>something went wrong</div>
+                    )}
+                  </div>
+                )}
+                <div className="w-full">{leftFilterData && <RecordTable data={leftFilterData} />}</div>
+              </div>
+            )}
           </div>
+          {/* <BarChartWithTrendLine /> */}
+          {/* <div>{recordData && <Table data={recordData?.data} />}</div> */}
+        </div>
       )}
     </div>
-  );
+  )
 }
