@@ -53,7 +53,6 @@ const chapters = [
   { title: "34" },
 ]
 
-
 export default function Dashboard() {
   const router = useRouter()
   const [allData, setAllData] = useState([])
@@ -334,6 +333,22 @@ export default function Dashboard() {
       document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [])
+
+  // Add this useEffect to clear search value when specified filters change
+  useEffect(() => {
+    // Clear search value when any of these values change
+    setFieldValue("searchValue", "")
+    setSelectedSearchValues([])
+    setSearchApiData([])
+  }, [
+    values.info,
+    values.dataType,
+    values.startDate,
+    values.endDate,
+    values.duration,
+    values.chapter,
+    values.searchType,
+  ])
 
   return (
     <div className="px-1 py-2 bg-gray-100">
