@@ -20,15 +20,11 @@ import {
 import { useFormik } from "formik"
 import ToggleButton from "@mui/material/ToggleButton"
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup"
-// import debounce from "lodash.debounce";
 import debounce from "lodash/debounce"
 import { toast } from "react-toastify"
 import axiosInstance from "@/utils/axiosInstance"
 import Checkbox from "@mui/material/Checkbox"
-// import Autocomplete from "@mui/material/Autocomplete";
-// import TextField from "@mui/material/TextField";
 import { CheckBoxOutlineBlank, CheckBox } from "@mui/icons-material"
-// import BarChart from "@/components/Barchart";
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
 
@@ -57,7 +53,6 @@ const chapters = [
   { title: "34" },
 ]
 
-const cleanChapters = [{ title: "29" }, { title: "30" }]
 
 export default function Dashboard() {
   const router = useRouter()
@@ -302,7 +297,7 @@ export default function Dashboard() {
     if (!values.startDate && !values.endDate) {
       const today = new Date()
       const lastThreeYears = new Date()
-      lastThreeYears.setFullYear(today.getFullYear() - 3) // Get last 3 years' date
+      lastThreeYears.setFullYear(today.getFullYear() - 5) // Get last 3 years' date
 
       const formattedStartDate = lastThreeYears.toLocaleDateString("en-GB").split("/").join("/")
       const formattedEndDate = today.toLocaleDateString("en-GB").split("/").join("/")
