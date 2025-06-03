@@ -3,12 +3,13 @@ import axiosInstance from "@/utils/axiosInstance";
 import axios from "axios";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 export default function Login() {
   const router = useRouter();
-  const [loader,setLoader ] = React.useState(false);
+  const [loader, setLoader] = useState(false);
+  const [token, setToken] = useState(null);
   const { values, errors, handleSubmit, handleChange, handleBlur } = useFormik({
     initialValues: {
       email: "",
@@ -18,12 +19,12 @@ export default function Login() {
       console.log(values);
       setLoader(true);
       try {
-        const response = await axiosInstance.post("/user/login", {
+        const response = await axiosInstance.post("/roles/login", {
           email: values.email,
           password: values.password,
         });
         if (response.status === 200) {
-          const { token, sessionId } = response.data;
+          const { token, sessionId } = response.data.data;
 
           console.log("Login Successful:", response.data);
           toast.success("Login Successful!");
@@ -46,6 +47,15 @@ export default function Login() {
       }
     },
   });
+
+  useEffect(() => {
+    const storedToken = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    setToken(storedToken);
+    if (storedToken) {
+      router.push('/dashboard');
+    }
+  }, [token]);
+
   return (
     <div>
       <section className="bg-gray-50 dark:bg-gray-900">
@@ -131,7 +141,7 @@ export default function Login() {
                   type="submit"
                   className="btn w-full bg-theme_color hover:bg-theme_color text-white"
                 >
-                  {loader? <span className="loader text-white" /> : "Sign in"}
+                  {loader ? <span className="loader text-white" /> : "Sign in"}
                 </button>
                 <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                   Don’t have an account yet?{" "}
