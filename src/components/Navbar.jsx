@@ -5,6 +5,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Freecurrencyapi from "@everapi/freecurrencyapi-js";
 import Image from "next/image";
+import { useDispatch, useSelector } from "react-redux";
+import { authNotExist } from "@/redux/reducers/authReducer";
 
 const countryCurrencies = [
   {
@@ -134,6 +136,10 @@ const Navbar = () => {
   const apiKey = "fca_live_yjJUTCPZCMosYS61xxVAAscj99B2G1AHTgH6rPWv"; // Replace with your actual API key
   const freecurrencyapi = new Freecurrencyapi(apiKey);
 
+  const dispatch = useDispatch();
+
+  const { auth } = useSelector((state) => state.authReducer);
+
   const [fromCurrency, setFromCurrency] = useState("USD");
   const [toCurrency, setToCurrency] = useState("EUR");
   const [amount, setAmount] = useState(1);
@@ -141,16 +147,8 @@ const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(null);
 
   const dropdownRef = useRef(null); // Ref for dropdown
- const [token, setToken] = useState(null);
- const router = useRouter();
-
- useEffect(() => {
-   const storedToken = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-   setToken(storedToken);
-   if (!storedToken) {
-     router.push('/login');
-   }
- }, []);
+  const [token, setToken] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (fromCurrency && toCurrency) {
@@ -180,6 +178,19 @@ const Navbar = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("sessionId");
+    dispatch(authNotExist());
+    router.push("/login");
+  }
+
+  useEffect(() => {
+    if (auth) {
+      router.push("/login");
+    }
+  }, [auth, router]);
 
   return (
     <div className="navbar bg-theme_color text-white py-1">
@@ -241,9 +252,8 @@ const Navbar = () => {
             <li>
               <Link
                 href="/dashboard"
-                className={`nav-link ${
-                  pathname === "/dashboard" ? "active" : ""
-                }`}
+                className={`nav-link ${pathname === "/dashboard" ? "active" : ""
+                  }`}
               >
                 Dashboard
               </Link>
@@ -294,9 +304,8 @@ const Navbar = () => {
             <li>
               <Link
                 href="/about-us"
-                className={`nav-link ${
-                  pathname === "/about-us" ? "active" : ""
-                }`}
+                className={`nav-link ${pathname === "/about-us" ? "active" : ""
+                  }`}
               >
                 About Us
               </Link>
@@ -304,9 +313,8 @@ const Navbar = () => {
             <li>
               <Link
                 href="/contact-us"
-                className={`nav-link ${
-                  pathname === "/contact-us" ? "active" : ""
-                }`}
+                className={`nav-link ${pathname === "/contact-us" ? "active" : ""
+                  }`}
               >
                 Contact Us
               </Link>
@@ -375,18 +383,16 @@ const Navbar = () => {
         <Link href="/admin-dashboard" className="btn btn-sm">
           Admin
         </Link>
-        {token ? (
-          <button  onClick={()=>{
-            localStorage.removeItem("token");
-          }} className="btn btn-sm">
+        {auth && auth.email ? (
+          <button onClick={handleLogout} className="btn btn-sm">
             Logout
           </button>
         ) : (
           <Link href="/login" className="btn btn-sm">
             Login In
           </Link>
-        )}  
-        
+        )}
+
       </div>
     </div>
   );

@@ -1,15 +1,28 @@
 "use client";
+import { authExists } from "@/redux/reducers/authReducer";
 import axiosInstance from "@/utils/axiosInstance";
 import axios from "axios";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 export default function Login() {
   const router = useRouter();
   const [loader, setLoader] = useState(false);
   const [token, setToken] = useState(null);
+
+  const dispatch = useDispatch();
+  const { auth } = useSelector(state => state.authReducer);
+
+  useEffect(() => {
+    if (auth) {
+      router.push("/dashboard");
+    }
+  }, [auth, router]);
+
+
   const { values, errors, handleSubmit, handleChange, handleBlur } = useFormik({
     initialValues: {
       email: "",
@@ -24,10 +37,13 @@ export default function Login() {
           password: values.password,
         });
         if (response.status === 200) {
+          router.push("/dashboard");
           const { token, sessionId } = response.data.data;
 
           console.log("Login Successful:", response.data);
           toast.success("Login Successful!");
+
+          dispatch(authExists(response.data.data.user));
 
           if (token) {
             localStorage.setItem("token", token);
@@ -35,8 +51,6 @@ export default function Login() {
           if (sessionId) {
             localStorage.setItem("sessionId", sessionId);
           }
-
-          router.push("/dashboard");
         }
       } catch (error) {
         toast.error(

@@ -1,9 +1,9 @@
-import { Inter } from "next/font/google";
-import "./globals.css";
+import ClientProviders from "@/components/ClientProviders";
 import NavbarFooterWrapper from "@/components/NavbarFooterWrapper";
-import { ToastContainer } from "react-toastify";
+import { Inter } from "next/font/google";
 import "react-toastify/dist/ReactToastify.css";
-import { Suspense } from "react";
+import "./globals.css";
+import { ToastContainer } from "react-toastify";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,22 +19,22 @@ export default function RootLayout({ children }) {
         // className={inter.className}
         className="flex flex-col justify-between min-h-[100vh]"
       >
-        <Suspense fallback={<div>Loading...</div>}>
+        <ClientProviders>
           <NavbarFooterWrapper>{children}</NavbarFooterWrapper>
-        </Suspense>
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss={false}
-          draggable
-          pauseOnHover={false}
-          theme="light"
-        />
+        </ClientProviders>
       </body>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable
+        pauseOnHover={false}
+        theme="light"
+      />
     </html>
   );
 }
