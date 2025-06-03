@@ -52,7 +52,7 @@ export default function UserActivities({ open, onClose, userId, userName }) {
   const fetchActivities = async () => {
     try {
       setLoading(true)
-      const response = await axiosInstance.get(`/api/roles/users/${userId}/activities`)
+      const response = await axiosInstance.get(`/roles/users/${userId}/activities`)
       setActivities(response.data.data)
     } catch (error) {
       toast.error("Failed to fetch user activities")

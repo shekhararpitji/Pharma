@@ -59,7 +59,7 @@ export default function UserManagement() {
   const fetchUsers = async () => {
     try {
       setLoading(true)
-      const response = await axiosInstance.get("/api/roles/users")
+      const response = await axiosInstance.get("/roles/users")
       setUsers(response.data.data)
     } catch (error) {
       toast.error("Failed to fetch users")
@@ -111,11 +111,11 @@ export default function UserManagement() {
     try {
       if (selectedUser) {
         // Update user
-        await axiosInstance.put(`/api/roles/users/${selectedUser.id}/access`, formData)
+        await axiosInstance.put(`/roles/users/${selectedUser.id}/access`, formData)
         toast.success("User updated successfully")
       } else {
         // Create new user
-        await axiosInstance.post("/api/roles/register", formData)
+        await axiosInstance.post("/roles/register", formData)
         toast.success("User created successfully")
       }
       handleCloseDialog()
@@ -129,7 +129,7 @@ export default function UserManagement() {
   const handleDelete = async (userId) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       try {
-        await axiosInstance.delete(`/api/roles/users/${userId}`)
+        await axiosInstance.delete(`/roles/users/${userId}`)
         toast.success("User deleted successfully")
         fetchUsers()
       } catch (error) {
@@ -141,7 +141,7 @@ export default function UserManagement() {
 
   const handleExport = async () => {
     try {
-      const response = await axiosInstance.get("/api/roles/users/export", {
+      const response = await axiosInstance.get("/roles/users/export", {
         responseType: "blob",
       })
       const url = window.URL.createObjectURL(new Blob([response.data]))
