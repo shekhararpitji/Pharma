@@ -27,6 +27,7 @@ import Checkbox from "@mui/material/Checkbox"
 import { CheckBoxOutlineBlank, CheckBox } from "@mui/icons-material"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
+import { AiOutlineReload } from "react-icons/ai";
 
 const icon = <CheckBoxOutlineBlank fontSize="small" />
 const checkedIcon = <CheckBox fontSize="small" />
@@ -159,9 +160,8 @@ export default function Dashboard() {
 
   const fetchSuggestions = async (query, currentValues, setSearchApiData, setError) => {
     const sessionId = localStorage.getItem("sessionId")
-    const url = `/data/suggestion?informationOf=${currentValues.info}&chapter=${
-      currentValues.chapter ? currentValues.chapter : ""
-    }&searchType=${currentValues.searchType}&suggestion=${encodeURIComponent(query)}&session=${sessionId}`
+    const url = `/data/suggestion?informationOf=${currentValues.info}&chapter=${currentValues.chapter ? currentValues.chapter : ""
+      }&searchType=${currentValues.searchType}&suggestion=${encodeURIComponent(query)}&session=${sessionId}`
     try {
       const response = await axiosInstance.get(url)
 
@@ -353,8 +353,8 @@ export default function Dashboard() {
   return (
     <div className="px-1 py-2 bg-gray-100">
       <form className="flex w-full flex-col justify-between items-center gap-6" onSubmit={handleSubmit}>
-        <div className="flex w-full justify-between gap-2">
-          <div>
+        <div className="flex w-full items-center justify-between gap-2">
+          {/* <div>
             <ToggleButtonGroup
               value={values.info}
               exclusive
@@ -393,7 +393,148 @@ export default function Dashboard() {
                 Export
               </ToggleButton>
             </ToggleButtonGroup>
+          </div> */}
+          <div>
+            <ToggleButtonGroup
+              value={values.info}
+              exclusive
+              onChange={(event, newAlignment) => setFieldValue("info", newAlignment)}
+              aria-label="text alignment"
+              size="small"
+              sx={{
+                borderRadius: "50px",
+                overflow: "hidden",
+                backgroundColor: "white",
+                border: "1px solid #d1d5db",
+                display: "flex",
+                gap: "4px",
+              }}
+            >
+              {/* IMPORT BUTTON */}
+              <ToggleButton
+                value="import"
+                aria-label="Import"
+                sx={{
+                  borderRadius: "50px",
+                  padding: values.info === "import" ? "5px" : "6px 14px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  textTransform: "none",
+                  minWidth: "unset",
+                  border: "none",
+                  justifyContent: "center",
+                  transition: "all 0.3s ease-in-out",
+                  backgroundColor: "transparent",
+                  color: "#1E3A8A",
+                  "&.Mui-selected": {
+                    backgroundColor: "transparent",
+                    color: "#1E3A8A",
+                    marginRight: "-25px",
+                  },
+                  "&:hover": {
+                    backgroundColor: "transparent",
+                  },
+                }}
+              >
+                <div
+                  style={{
+                    borderRadius: "50px",
+                    backgroundColor: values.info === "import" ? "#1E3A8A" : "transparent",
+                    color: values.info === "import" ? "white" : "transparent",
+                    padding: values.info === "import" ? "6px 16px" : "0px",
+                    maxWidth: values.info === "import" ? "100px" : "0px",
+                    height: "28px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontWeight: "bold",
+                    fontSize: "14px",
+                    whiteSpace: "nowrap",
+                    transition: "all 0.3s ease-in-out",
+                    overflow: "hidden",
+                  }}
+                >
+                  Import
+                </div>
+                <span
+                  style={{
+                    fontWeight: "bold",
+                    opacity: values.info === "import" ? 0 : 1,
+                    width: values.info === "import" ? 0 : "auto",
+                    overflow: "hidden",
+                    transition: "all 0.3s ease-in-out",
+                    color: "#1E3A8A",
+                  }}
+                >
+                  Import
+                </span>
+              </ToggleButton>
+
+              {/* EXPORT BUTTON */}
+              <ToggleButton
+                value="export"
+                aria-label="Export"
+                sx={{
+                  borderRadius: "50px",
+                  padding: values.info === "export" ? "5px" : "6px 14px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  textTransform: "none",
+                  minWidth: "unset",
+                  justifyContent: "center",
+                  border: "none",
+                  transition: "all 0.3s ease-in-out",
+                  backgroundColor: "transparent",
+                  color: "#1E3A8A",
+                  "&.Mui-selected": {
+                    backgroundColor: "transparent",
+                    marginLeft: "-15px",
+                    color: "#1E3A8A",
+                  },
+                  "&:hover": {
+                    backgroundColor: "transparent",
+                  },
+                }}
+              >
+                <div
+                  style={{
+                    borderRadius: "50px",
+                    backgroundColor: values.info === "export" ? "#1E3A8A" : "transparent",
+                    color: values.info === "export" ? "white" : "transparent",
+                    padding: values.info === "export" ? "6px 16px" : "0px",
+                    maxWidth: values.info === "export" ? "100px" : "0px",
+                    height: "28px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontWeight: "bold",
+                    fontSize: "14px",
+                    whiteSpace: "nowrap",
+                    transition: "all 0.3s ease-in-out",
+                    overflow: "hidden",
+                  }}
+                >
+                  Export
+                </div>
+                <span
+                  style={{
+                    fontWeight: "bold",
+                    opacity: values.info === "export" ? 0 : 1,
+                    width: values.info === "export" ? 0 : "auto",
+                    overflow: "hidden",
+                    transition: "all 0.3s ease-in-out",
+                    color: "#1E3A8A",
+                  }}
+                >
+                  Export
+                </span>
+              </ToggleButton>
+            </ToggleButtonGroup>
           </div>
+
+
           {/* DATE======= */}
           {/* <div className="w-full">
             <Datepicker
@@ -425,9 +566,9 @@ export default function Dashboard() {
             />
           </div> */}
 
-          <div className="w-[500px] bg-white relative rounded border border-gray-300" ref={datePickerRef}>
+          <div className="bg-white relative rounded-full border border-gray-300" ref={datePickerRef}>
             <div
-              className="text-gray-700 font-medium p-2 cursor-pointer"
+              className="text-gray-700 w-max font-medium p-2 cursor-pointer"
               onClick={() => setShowDatePicker(!showDatePicker)}
             >
               {values.startDate && values.endDate
@@ -461,9 +602,9 @@ export default function Dashboard() {
           </div>
 
           {/* DATA TYPE======= */}
-          <div className="w-[250px]">
-            <FormControl className="w-full" size="small" sx={{ backgroundColor: "white" }}>
-              <InputLabel id="data-type-label">Data Type</InputLabel>
+          <div className="w-[250px] !border-none">
+            <FormControl className="w-full rounded-full" size="small" sx={{ backgroundColor: "white", "& .MuiOutlinedInput-root": { borderRadius: "50px" } }}>
+              <InputLabel id="data-type-label" className="border-none">Data Type</InputLabel>
               <Select
                 label="Data Type"
                 labelId="data-type-label"
@@ -535,13 +676,15 @@ export default function Dashboard() {
                 />
               )}
               style={{ width: "100%", backgroundColor: "white" }}
+              sx={{ backgroundColor: "white", "& .MuiOutlinedInput-root": { borderRadius: "50px" } }}
+              className="rounded-full"
             />
           </div>
           <div className="w-full">
-            <FormControl className="w-full" size="small" sx={{ backgroundColor: "white", borderColor: "gray" }}>
+            <FormControl className="w-full rounded-full" size="small" sx={{ backgroundColor: "white", borderColor: "gray", "& .MuiOutlinedInput-root": { borderRadius: "50px" } }}>
               <InputLabel
                 id="search-type-label"
-                // sx={{ color: "black", backgroundColor: "white", paddingX: 1 }}
+              // sx={{ color: "black", backgroundColor: "white", paddingX: 1 }}
               >
                 Search Type
               </InputLabel>
@@ -561,7 +704,7 @@ export default function Dashboard() {
                       values.dataType === ""
                         ? true
                         : (values.dataType === "raw data" && ["Product Name", "CAS Number"].includes(item.title)) ||
-                          (values.dataType !== "raw data" && item.title === "Product Description")
+                        (values.dataType !== "raw data" && item.title === "Product Description")
                     }
                     value={item.value}
                     key={i}
@@ -573,27 +716,15 @@ export default function Dashboard() {
             </FormControl>
           </div>
           <div>
-            <Button
-              type="button"
-              variant="outlined"
+            <AiOutlineReload size={28}
+              className="cursor-pointer text-gray-500 hover:text-gray-700 transition-colors duration-200"
               onClick={() => {
                 resetForm()
                 setSearchApiData([])
                 setFieldValue("searchValue", "")
                 setSelectedSearchValues([])
                 setShowDatePicker(false)
-              }}
-              sx={{
-                borderColor: "#1E3A8A",
-                color: "#1E3A8A",
-                "&:hover": {
-                  borderColor: "#162F63",
-                  backgroundColor: "transparent",
-                },
-              }}
-            >
-              Reset
-            </Button>
+              }} />
           </div>
         </div>
 

@@ -56,14 +56,14 @@ body {
 
 .nav-link {
   position: relative;
-  display: inline-block;
-  padding-bottom: 4px;
+  /* display: inline-block; */
+  padding: 5px 10px;
   color: inherit;
   text-decoration: none;
   transition: color 0.3s ease, transform 0.3s ease;
 }
 
-.nav-link::after {
+/* .nav-link::after {
   content: "";
   position: absolute;
   width: 0;
@@ -73,17 +73,20 @@ body {
   background-color: currentColor;
   transform: translateX(-50%);
   transition: width 0.3s ease;
-}
+} */
 
-.nav-link:hover::after,
+/* .nav-link:hover::after,
 .nav-link.active::after {
-  width: 100%; /* Underline only under the text */
-}
+  width: 100%;
+} */
 
 .nav-link:hover,
 .nav-link.active {
-  color: #00ffff; /* Customize hover/active color */
-  transform: scale(1); /* Scale the text size on hover and active */
+  background-color: white;
+  padding: 5px 10px; 
+  border-radius: 50px;
+  color: #1e3a8a; /* Customize hover/active color */
+  /* transform: scale(1); */
   font-weight: bold; /* Bold text on hover and active */
 }
 

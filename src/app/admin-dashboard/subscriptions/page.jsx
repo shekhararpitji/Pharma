@@ -70,7 +70,7 @@ export default function SubscriptionManagement() {
   const fetchSubscriptions = async () => {
     try {
       setLoading(true)
-      const response = await axiosInstance.get("/subscriptions")
+      const response = await axiosInstance.get("/api/subscriptions")
       setSubscriptions(response.data.data)
     } catch (error) {
       toast.error("Failed to fetch subscriptions")
