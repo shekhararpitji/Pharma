@@ -5,6 +5,8 @@ import { CiSearch } from "react-icons/ci"
 import { RxSize } from "react-icons/rx"
 import { IoBarChart } from "react-icons/io5"
 import { FaChevronDown } from "react-icons/fa"
+import { TbFileDatabase } from "react-icons/tb";
+
 import {
   Autocomplete,
   Backdrop,
@@ -644,7 +646,7 @@ export default function Dashboard() {
               style={{ width: "100%", backgroundColor: "white" }}
             />
           </div> */}
-          <div className="w-[350px]">
+          <div className="w-[300px]">
             <Autocomplete
               multiple
               disableCloseOnSelect
@@ -680,7 +682,7 @@ export default function Dashboard() {
               className="rounded-full"
             />
           </div>
-          <div className="w-full">
+          <div className="w-[500px]">
             <FormControl className="w-full rounded-full" size="small" sx={{ backgroundColor: "white", borderColor: "gray", "& .MuiOutlinedInput-root": { borderRadius: "50px" } }}>
               <InputLabel
                 id="search-type-label"
@@ -794,9 +796,7 @@ export default function Dashboard() {
                   },
                 }}
                 endIcon={<CiSearch />}
-              >
-                Search
-              </Button>
+              ></Button>
             </Stack>
           </div>
 
@@ -841,6 +841,8 @@ export default function Dashboard() {
                     backgroundColor: "#1E3A8A",
                   },
                 }}
+                endIcon={<TbFileDatabase />}
+
               >
                 graph
               </ToggleButton>

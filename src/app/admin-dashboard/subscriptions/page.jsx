@@ -37,8 +37,8 @@ import {
 import { toast } from "react-toastify"
 import axiosInstance from "@/utils/axiosInstance"
 
-const SUBSCRIPTION_TYPES = ["raw", "cleaned", "premium"]
-const DATA_TYPES = ["type1", "type2", "type3"]
+const SUBSCRIPTION_TYPES = ["raw", "cleaned"]
+const DATA_TYPES = ["Export", "Import"]
 const CHAPTER_NUMBERS = Array.from({ length: 34 }, (_, i) => i + 1)
 
 export default function SubscriptionManagement() {
@@ -55,11 +55,7 @@ export default function SubscriptionManagement() {
     chapterNumber: [],
     productlimit: 100,
     subscribedDurationDownload: 12,
-    subscribedDurationView: 12,
-    subscriptionCost: 0,
-    paymentMethod: "credit_card",
-    paymentId: "",
-    autoRenew: true,
+    subscribedDurationView: 12
   })
 
   // Fetch subscriptions on component mount
@@ -70,7 +66,7 @@ export default function SubscriptionManagement() {
   const fetchSubscriptions = async () => {
     try {
       setLoading(true)
-      const response = await axiosInstance.get("/api/subscriptions")
+      const response = await axiosInstance.get("/subscriptions")
       setSubscriptions(response.data.data)
     } catch (error) {
       toast.error("Failed to fetch subscriptions")
@@ -81,34 +77,40 @@ export default function SubscriptionManagement() {
   }
 
   const handleOpenDialog = (subscription = null) => {
-    if (subscription) {
-      setSelectedSubscription(subscription)
-      setFormData({
-        ...subscription,
-        subscriptionType: subscription.subscriptionType || [],
-        dataType: subscription.dataType || [],
-        chapterNumber: subscription.chapterNumber || [],
-      })
-    } else {
-      setSelectedSubscription(null)
-      setFormData({
-        clientName: "",
-        contactPerson: "",
-        email: "",
-        subscriptionType: [],
-        dataType: [],
-        chapterNumber: [],
-        productlimit: 100,
-        subscribedDurationDownload: 12,
-        subscribedDurationView: 12,
-        subscriptionCost: 0,
-        paymentMethod: "credit_card",
-        paymentId: "",
-        autoRenew: true,
-      })
-    }
-    setOpenDialog(true)
+  if (subscription) {
+    setSelectedSubscription(subscription)
+    setFormData({
+      ...subscription,
+      subscriptionType: Array.isArray(subscription.subscriptionType)
+        ? subscription.subscriptionType
+        : [subscription.subscriptionType].filter(Boolean),
+      dataType: Array.isArray(subscription.dataType)
+        ? subscription.dataType
+        : [subscription.dataType].filter(Boolean),
+      chapterNumber: Array.isArray(subscription.chapterNumber)
+        ? subscription.chapterNumber
+        : [subscription.chapterNumber].filter(Boolean),
+    })
+  } else {
+    setSelectedSubscription(null)
+    setFormData({
+      clientName: "",
+      contactPerson: "",
+      email: "",
+      subscriptionType: [],
+      dataType: [],
+      chapterNumber: [],
+      productlimit: 100,
+      subscribedDurationDownload: 12,
+      subscribedDurationView: 12,
+      subscriptionCost: 0,
+      paymentMethod: "credit_card",
+      paymentId: "",
+      autoRenew: true,
+    })
   }
+  setOpenDialog(true)
+}
 
   const handleCloseDialog = () => {
     setOpenDialog(false)
@@ -191,14 +193,14 @@ export default function SubscriptionManagement() {
                 <TableCell>{subscription.contactPerson}</TableCell>
                 <TableCell>{subscription.email}</TableCell>
                 <TableCell>
-                  {subscription.subscriptionType.map((type) => (
+                  {Array.isArray(subscription?.subscriptionType) ? subscription.subscriptionType.map((type) => (
                     <Chip
                       key={type}
                       label={type}
                       size="small"
                       sx={{ mr: 0.5, mb: 0.5 }}
                     />
-                  ))}
+                  )) : null}
                 </TableCell>
                 <TableCell>{subscription.productlimit}</TableCell>
                 <TableCell>
@@ -268,7 +270,7 @@ export default function SubscriptionManagement() {
                   label="Subscription Type"
                   renderValue={(selected) => (
                     <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                      {selected.map((value) => (
+                      {(Array.isArray(selected) ? selected : []).map((value) => (
                         <Chip key={value} label={value} />
                       ))}
                     </Box>
