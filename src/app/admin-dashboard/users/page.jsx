@@ -46,7 +46,7 @@ export default function UserManagement() {
     name: "",
     email: "",
     password: "",
-    role: "user",
+    role: "",
     partyName: "",
     mobileNumber: "",
   })
@@ -262,8 +262,8 @@ export default function UserManagement() {
                   onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                   label="Role"
                 >
-                  <MenuItem value="user">User</MenuItem>
-                  <MenuItem value="admin">Admin</MenuItem>
+                  <MenuItem value="parent">Parent</MenuItem>
+                  <MenuItem value="kid">Kid</MenuItem>
                 </Select>
               </FormControl>
               <TextField
